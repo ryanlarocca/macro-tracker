@@ -1078,6 +1078,31 @@ function showView(name) {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
+// Fetch latest data from GitHub and merge with localStorage
+async function syncFromGithub() {
+  try {
+    const res = await fetch('/macro-tracker/data.json?t=' + Date.now());
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (!Array.isArray(remote) || !remote.length) return;
+    const local = getLogs();
+    // Merge: deduplicate by date+time+description
+    const map = new Map();
+    [...remote, ...local].forEach(e => {
+      const key = `${e.date}|${e.time}|${e.description}`;
+      if (!map.has(key)) map.set(key, e);
+    });
+    const merged = Array.from(map.values()).sort((a,b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return a.time.localeCompare(b.time);
+    });
+    saveLogs(merged);
+    renderToday();
+    renderHistory();
+  } catch(_) {}
+}
+
+syncFromGithub();
 renderToday();
 
 // Service Worker
