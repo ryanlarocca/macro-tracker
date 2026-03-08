@@ -42,9 +42,10 @@
       background: var(--card);
       border-bottom: 1px solid var(--border);
       padding: 16px 20px;
+      padding-top: calc(16px + env(safe-area-inset-top));
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -54,31 +55,46 @@
     .logo span { color: var(--green); }
 
     nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
-      gap: 8px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 10px 20px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      z-index: 200;
+      gap: 0;
     }
 
     .nav-btn {
+      flex: 1;
       background: none;
-      border: 1px solid var(--border);
+      border: none;
       color: var(--muted);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
+      padding: 8px 0;
+      font-size: 0.8rem;
       cursor: pointer;
       transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
     }
 
+    .nav-btn .nav-icon { font-size: 1.3rem; }
+    .nav-btn .nav-label { font-size: 0.7rem; }
+
     .nav-btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
+      color: var(--green);
     }
 
     .container {
       max-width: 600px;
       margin: 0 auto;
       padding: 16px;
+      padding-bottom: calc(90px + env(safe-area-inset-bottom));
     }
 
     /* Views */
@@ -484,11 +500,18 @@
 
 <header>
   <div class="logo">Macro<span>Track</span></div>
-  <nav>
-    <button class="nav-btn active" onclick="showView('today')">Today</button>
-    <button class="nav-btn" onclick="showView('history')">History</button>
-  </nav>
 </header>
+
+<nav>
+  <button class="nav-btn active" onclick="showView('today')">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">Today</span>
+  </button>
+  <button class="nav-btn" onclick="showView('history')">
+    <span class="nav-icon">📈</span>
+    <span class="nav-label">History</span>
+  </button>
+</nav>
 
 <div class="container">
 
@@ -1101,16 +1124,22 @@ async function syncFromGithub() {
   } catch(_) {}
 }
 
-// One-time cleanup: remove seed placeholder entries that leaked into localStorage
+// One-time cleanup: remove all fake seed placeholder entries from localStorage
 (function purgeFakeSeedEntries() {
-  const PURGE_KEY = 'mt_purged_v1';
+  const PURGE_KEY = 'mt_purged_v2';
   if (localStorage.getItem(PURGE_KEY)) return;
-  const fakes = new Set([
-    '2026-03-08|08:00|Eggs + avocado toast',
-    '2026-03-08|13:00|Grilled chicken wrap',
+  // Remove all placeholder seed descriptions (fake data from initial seed)
+  const fakeDescs = new Set([
+    'Oatmeal + protein shake','Chicken rice bowl','Greek yogurt + almonds',
+    'Salmon + veggies','Eggs + toast','Turkey sandwich','Ground beef + rice',
+    'Protein shake + banana','Grilled chicken salad','Steak + potatoes',
+    'Breakfast burrito','Tuna wrap','Pasta + chicken','Oatmeal + eggs',
+    'Salmon + sweet potato','Greek yogurt parfait','Beef stir fry',
+    'Chicken + veggies','Protein shake + oats','Turkey bowl','Ground beef tacos',
+    'Eggs + avocado toast','Grilled chicken wrap',
   ]);
   const logs = getLogs();
-  const cleaned = logs.filter(e => !fakes.has(`${e.date}|${e.time}|${e.description}`));
+  const cleaned = logs.filter(e => !fakeDescs.has(e.description));
   if (cleaned.length !== logs.length) saveLogs(cleaned);
   localStorage.setItem(PURGE_KEY, '1');
 })();
