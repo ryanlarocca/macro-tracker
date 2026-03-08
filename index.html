@@ -643,7 +643,8 @@ function saveTargets(t) {
 }
 
 // Seed on first load
-if (!localStorage.getItem(SEED_KEY)) {
+// Only seed if no data exists at all (never overwrites user data)
+if (!localStorage.getItem(LOGS_KEY)) {
   saveLogs(SEED);
   localStorage.setItem(SEED_KEY, '1');
 }
