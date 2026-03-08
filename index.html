@@ -1108,11 +1108,15 @@ async function syncFromGithub() {
     const remote = await res.json();
     if (!Array.isArray(remote) || !remote.length) return;
     const local = getLogs();
-    // Merge: deduplicate by date+time+description
+    // Merge: remote is canonical; also include any local-only entries (new bot or manual logs)
     const map = new Map();
-    [...remote, ...local].forEach(e => {
+    remote.forEach(e => {
       const key = `${e.date}|${e.time}|${e.description}`;
-      if (!map.has(key)) map.set(key, e);
+      map.set(key, e);
+    });
+    local.forEach(e => {
+      const key = `${e.date}|${e.time}|${e.description}`;
+      if (!map.has(key)) map.set(key, e); // keep local-only entries
     });
     const merged = Array.from(map.values()).sort((a,b) => {
       if (a.date !== b.date) return a.date.localeCompare(b.date);
@@ -1124,23 +1128,12 @@ async function syncFromGithub() {
   } catch(_) {}
 }
 
-// One-time cleanup: remove all fake seed placeholder entries from localStorage
+// v3: full reset — wipe stale/incorrect localStorage, let data.json repopulate
 (function purgeFakeSeedEntries() {
-  const PURGE_KEY = 'mt_purged_v2';
+  const PURGE_KEY = 'mt_purged_v3';
   if (localStorage.getItem(PURGE_KEY)) return;
-  // Remove all placeholder seed descriptions (fake data from initial seed)
-  const fakeDescs = new Set([
-    'Oatmeal + protein shake','Chicken rice bowl','Greek yogurt + almonds',
-    'Salmon + veggies','Eggs + toast','Turkey sandwich','Ground beef + rice',
-    'Protein shake + banana','Grilled chicken salad','Steak + potatoes',
-    'Breakfast burrito','Tuna wrap','Pasta + chicken','Oatmeal + eggs',
-    'Salmon + sweet potato','Greek yogurt parfait','Beef stir fry',
-    'Chicken + veggies','Protein shake + oats','Turkey bowl','Ground beef tacos',
-    'Eggs + avocado toast','Grilled chicken wrap',
-  ]);
-  const logs = getLogs();
-  const cleaned = logs.filter(e => !fakeDescs.has(e.description));
-  if (cleaned.length !== logs.length) saveLogs(cleaned);
+  localStorage.removeItem(LOGS_KEY);
+  localStorage.removeItem(SEED_KEY);
   localStorage.setItem(PURGE_KEY, '1');
 })();
 

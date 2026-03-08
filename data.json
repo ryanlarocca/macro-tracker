@@ -1,182 +1,49 @@
 [
-  {
-    "date": "2026-03-06",
-    "time": "08:00",
-    "description": "Oatmeal (1 serving)",
-    "calories": 150,
-    "protein": 5,
-    "carbs": 27,
-    "fat": 3
-  },
-  {
-    "date": "2026-03-06",
-    "time": "08:05",
-    "description": "Honey (1 serving)",
-    "calories": 64,
-    "protein": 0,
-    "carbs": 17,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-06",
-    "time": "09:00",
-    "description": "Oranges (2 medium)",
-    "calories": 124,
-    "protein": 2,
-    "carbs": 30,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-06",
-    "time": "12:00",
-    "description": "Chicken breast (380g raw)",
-    "calories": 456,
-    "protein": 84,
-    "carbs": 0,
-    "fat": 10
-  },
-  {
-    "date": "2026-03-06",
-    "time": "12:05",
-    "description": "Red potato (190g)",
-    "calories": 146,
-    "protein": 4,
-    "carbs": 34,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-06",
-    "time": "12:10",
-    "description": "Butter (2 tsp)",
-    "calories": 68,
-    "protein": 0,
-    "carbs": 0,
-    "fat": 8
-  },
-  {
-    "date": "2026-03-06",
-    "time": "15:00",
-    "description": "Cookies (2)",
-    "calories": 160,
-    "protein": 2,
-    "carbs": 23,
-    "fat": 7
-  },
-  {
-    "date": "2026-03-07",
-    "time": "08:00",
-    "description": "Oatmeal (1 serving)",
-    "calories": 150,
-    "protein": 5,
-    "carbs": 27,
-    "fat": 3
-  },
-  {
-    "date": "2026-03-07",
-    "time": "08:05",
-    "description": "Honey (1 serving)",
-    "calories": 64,
-    "protein": 0,
-    "carbs": 17,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-07",
-    "time": "08:10",
-    "description": "Egg whites (240g)",
-    "calories": 125,
-    "protein": 26,
-    "carbs": 2,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-07",
-    "time": "10:00",
-    "description": "Apple (medium)",
-    "calories": 95,
-    "protein": 0,
-    "carbs": 25,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-07",
-    "time": "12:30",
-    "description": "Caesar chicken salad (extra chicken)",
-    "calories": 650,
-    "protein": 55,
-    "carbs": 18,
-    "fat": 38
-  },
-  {
-    "date": "2026-03-07",
-    "time": "18:00",
-    "description": "Chicken breast (350g raw)",
-    "calories": 420,
-    "protein": 77,
-    "carbs": 0,
-    "fat": 9
-  },
-  {
-    "date": "2026-03-07",
-    "time": "18:05",
-    "description": "Potato (185g)",
-    "calories": 142,
-    "protein": 4,
-    "carbs": 33,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-07",
-    "time": "18:10",
-    "description": "White rice (100g cooked)",
-    "calories": 130,
-    "protein": 2,
-    "carbs": 28,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-07",
-    "time": "20:00",
-    "description": "Protein powder (1.5 scoops)",
-    "calories": 240,
-    "protein": 39,
-    "carbs": 12,
-    "fat": 4
-  },
-  {
-    "date": "2026-03-07",
-    "time": "20:05",
-    "description": "Dannon Light & Fit yogurt",
-    "calories": 80,
-    "protein": 12,
-    "carbs": 8,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-07",
-    "time": "20:10",
-    "description": "Cookies (3)",
-    "calories": 240,
-    "protein": 3,
-    "carbs": 35,
-    "fat": 11
-  },
-  {
-    "date": "2026-03-07",
-    "time": "20:15",
-    "description": "Apple (medium)",
-    "calories": 95,
-    "protein": 0,
-    "carbs": 25,
-    "fat": 0
-  },
-  {
-    "date": "2026-03-08",
-    "time": "08:00",
-    "description": "Quaker oats oatmeal with honey and egg whites",
-    "calories": 370,
-    "protein": 27,
-    "carbs": 45,
-    "fat": 3
-  }
+  {"date":"2026-03-05","time":"08:00","description":"Oatmeal (1 serving)","calories":150,"protein":5,"carbs":27,"fat":3},
+  {"date":"2026-03-05","time":"08:05","description":"Egg whites (240g)","calories":125,"protein":26,"carbs":2,"fat":0},
+  {"date":"2026-03-05","time":"10:00","description":"Apple (medium)","calories":95,"protein":0,"carbs":25,"fat":0},
+  {"date":"2026-03-05","time":"12:30","description":"Caesar chicken salad (extra chicken)","calories":650,"protein":55,"carbs":18,"fat":38},
+  {"date":"2026-03-05","time":"18:00","description":"Chicken breast (350g raw)","calories":420,"protein":77,"carbs":0,"fat":9},
+  {"date":"2026-03-05","time":"18:05","description":"Potato (185g)","calories":142,"protein":4,"carbs":33,"fat":0},
+  {"date":"2026-03-05","time":"18:10","description":"White rice (100g cooked)","calories":130,"protein":2,"carbs":28,"fat":0},
+  {"date":"2026-03-05","time":"20:00","description":"Protein powder (1.5 scoops)","calories":240,"protein":39,"carbs":12,"fat":4},
+  {"date":"2026-03-05","time":"20:05","description":"Dannon Light & Fit yogurt","calories":80,"protein":12,"carbs":8,"fat":0},
+  {"date":"2026-03-05","time":"20:10","description":"Cookies (3)","calories":240,"protein":3,"carbs":35,"fat":11},
+  {"date":"2026-03-05","time":"20:15","description":"Apple (medium)","calories":95,"protein":0,"carbs":25,"fat":0},
+
+  {"date":"2026-03-06","time":"08:00","description":"Oatmeal (1 serving)","calories":150,"protein":5,"carbs":27,"fat":3},
+  {"date":"2026-03-06","time":"08:05","description":"Honey (1 serving)","calories":64,"protein":0,"carbs":17,"fat":0},
+  {"date":"2026-03-06","time":"09:00","description":"Oranges (2 medium)","calories":124,"protein":2,"carbs":30,"fat":0},
+  {"date":"2026-03-06","time":"12:00","description":"Chicken breast (380g raw)","calories":456,"protein":84,"carbs":0,"fat":10},
+  {"date":"2026-03-06","time":"12:05","description":"Red potato (190g)","calories":146,"protein":4,"carbs":34,"fat":0},
+  {"date":"2026-03-06","time":"12:10","description":"Butter (2 tsp)","calories":68,"protein":0,"carbs":0,"fat":8},
+  {"date":"2026-03-06","time":"15:00","description":"Cookies (2)","calories":160,"protein":2,"carbs":23,"fat":7},
+  {"date":"2026-03-06","time":"15:30","description":"Mini ice cream sandwich","calories":100,"protein":2,"carbs":16,"fat":4},
+  {"date":"2026-03-06","time":"16:00","description":"Chocolate rice cake","calories":60,"protein":1,"carbs":12,"fat":2},
+  {"date":"2026-03-06","time":"16:05","description":"Banana (medium)","calories":105,"protein":1,"carbs":27,"fat":0},
+  {"date":"2026-03-06","time":"16:30","description":"Dannon Light & Fit yogurt","calories":80,"protein":12,"carbs":8,"fat":0},
+  {"date":"2026-03-06","time":"16:35","description":"Cookies (½ serving)","calories":80,"protein":1,"carbs":12,"fat":4},
+  {"date":"2026-03-06","time":"16:40","description":"Mini pepperonis (~10)","calories":70,"protein":3,"carbs":0,"fat":6},
+  {"date":"2026-03-06","time":"19:00","description":"Pork chop (260g cooked, adjusted)","calories":542,"protein":72,"carbs":0,"fat":28},
+  {"date":"2026-03-06","time":"19:05","description":"White rice (170g cooked)","calories":221,"protein":4,"carbs":48,"fat":0},
+  {"date":"2026-03-06","time":"20:30","description":"Red apple (medium)","calories":95,"protein":0,"carbs":25,"fat":0},
+
+  {"date":"2026-03-07","time":"08:00","description":"Egg whites (200g)","calories":104,"protein":22,"carbs":2,"fat":0},
+  {"date":"2026-03-07","time":"08:05","description":"Oatmeal (1 serving)","calories":150,"protein":5,"carbs":27,"fat":3},
+  {"date":"2026-03-07","time":"08:10","description":"Honey (1 serving)","calories":64,"protein":0,"carbs":17,"fat":0},
+  {"date":"2026-03-07","time":"12:00","description":"Chicken breast (400g raw)","calories":480,"protein":88,"carbs":0,"fat":10},
+  {"date":"2026-03-07","time":"12:05","description":"White rice (200g cooked)","calories":260,"protein":5,"carbs":56,"fat":1},
+  {"date":"2026-03-07","time":"15:00","description":"Cookies (1 serving)","calories":160,"protein":2,"carbs":23,"fat":7},
+  {"date":"2026-03-07","time":"15:05","description":"Orange (medium)","calories":62,"protein":1,"carbs":15,"fat":0},
+  {"date":"2026-03-07","time":"15:30","description":"Raspberries (12oz / 340g)","calories":178,"protein":4,"carbs":41,"fat":2},
+  {"date":"2026-03-07","time":"19:00","description":"Chocolate rice cakes (4)","calories":240,"protein":4,"carbs":48,"fat":6},
+  {"date":"2026-03-07","time":"19:05","description":"Strawberries (2 handfuls ~200g)","calories":64,"protein":1,"carbs":15,"fat":0},
+  {"date":"2026-03-07","time":"19:10","description":"Cookies (1 serving)","calories":160,"protein":2,"carbs":23,"fat":7},
+  {"date":"2026-03-07","time":"19:15","description":"Red potato (220g)","calories":169,"protein":5,"carbs":39,"fat":0},
+  {"date":"2026-03-07","time":"19:20","description":"Pork chop (310g cooked, adjusted)","calories":574,"protein":86,"carbs":0,"fat":25},
+  {"date":"2026-03-07","time":"19:25","description":"Dannon Light & Fit yogurt","calories":80,"protein":12,"carbs":8,"fat":0},
+  {"date":"2026-03-07","time":"20:30","description":"Apple (medium)","calories":95,"protein":0,"carbs":25,"fat":0},
+  {"date":"2026-03-07","time":"20:35","description":"Oranges (2 medium)","calories":124,"protein":2,"carbs":30,"fat":0},
+
+  {"date":"2026-03-08","time":"08:00","description":"Quaker oats oatmeal with honey and egg whites","calories":370,"protein":27,"carbs":45,"fat":3}
 ]
