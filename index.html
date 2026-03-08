@@ -1027,12 +1027,9 @@ function renderDailyBreakdown() {
     days.push(d.toLocaleDateString('en-CA')); // YYYY-MM-DD
   }
 
-  container.innerHTML = days.map(dateStr => {
+  container.innerHTML = days.map((dateStr, i) => {
     const entries = logs.filter(e => e.date === dateStr);
     const d = new Date(dateStr + 'T12:00:00');
-    const label = i === 0
-      ? 'Today'
-      : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const isToday = dateStr === today.toLocaleDateString('en-CA');
     const displayLabel = isToday ? `Today — ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : dayLabel;
