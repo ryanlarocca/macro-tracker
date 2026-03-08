@@ -16,5 +16,14 @@
     "protein": 0.5,
     "carbs": 12,
     "fat": 0.2
+  },
+  {
+    "date": "2026-03-08",
+    "time": "04:14 PM",
+    "description": "Chipotle bowl with light rice, pinto beans, double chicken, grilled vegetables, pico de gallo, corn, and light cheese",
+    "calories": 720,
+    "protein": 52,
+    "carbs": 68,
+    "fat": 22
   }
 ]
