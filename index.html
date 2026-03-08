@@ -622,8 +622,7 @@ const SEED = [
   {date:"2026-03-07",time:"08:00",description:"Protein shake + oats",calories:500,protein:44,carbs:58,fat:8},
   {date:"2026-03-07",time:"13:00",description:"Turkey bowl",calories:660,protein:50,carbs:70,fat:16},
   {date:"2026-03-07",time:"19:00",description:"Ground beef tacos",calories:780,protein:58,carbs:72,fat:24},
-  {date:"2026-03-08",time:"08:00",description:"Eggs + avocado toast",calories:540,protein:28,carbs:48,fat:22},
-  {date:"2026-03-08",time:"13:00",description:"Grilled chicken wrap",calories:620,protein:48,carbs:58,fat:16}
+
 ];
 
 function getLogs() {
@@ -1101,6 +1100,20 @@ async function syncFromGithub() {
     renderHistory();
   } catch(_) {}
 }
+
+// One-time cleanup: remove seed placeholder entries that leaked into localStorage
+(function purgeFakeSeedEntries() {
+  const PURGE_KEY = 'mt_purged_v1';
+  if (localStorage.getItem(PURGE_KEY)) return;
+  const fakes = new Set([
+    '2026-03-08|08:00|Eggs + avocado toast',
+    '2026-03-08|13:00|Grilled chicken wrap',
+  ]);
+  const logs = getLogs();
+  const cleaned = logs.filter(e => !fakes.has(`${e.date}|${e.time}|${e.description}`));
+  if (cleaned.length !== logs.length) saveLogs(cleaned);
+  localStorage.setItem(PURGE_KEY, '1');
+})();
 
 syncFromGithub();
 renderToday();
