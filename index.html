@@ -338,6 +338,59 @@
     }
 
     /* History view */
+    /* Daily breakdown cards */
+    .day-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .day-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .day-card-date {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .day-card-cal {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--green);
+    }
+    .day-card-macros {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .day-macro {
+      background: var(--card2);
+      border-radius: 10px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+    .day-macro-icon { font-size: 1rem; }
+    .day-macro-val {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 2px;
+    }
+    .day-macro-lbl {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .day-card-empty {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
     .range-tabs {
       display: flex;
       gap: 6px;
@@ -594,7 +647,11 @@
 
   <!-- HISTORY VIEW -->
   <div class="view" id="view-history">
-    <div class="section-title" style="margin-top:8px">Calorie History</div>
+
+    <div class="section-title" style="margin-top:8px">Last 7 Days</div>
+    <div id="dailyBreakdown"></div>
+
+    <div class="section-title" style="margin-top:20px">Calorie History</div>
     <div class="range-tabs" id="rangeTabs">
       <button class="range-tab active" data-range="7" onclick="setRange(7, this)">7D</button>
       <button class="range-tab" data-range="14" onclick="setRange(14, this)">14D</button>
@@ -957,7 +1014,78 @@ function setRange(days, el) {
   renderHistory();
 }
 
+function renderDailyBreakdown() {
+  const logs = getLogs();
+  const container = document.getElementById('dailyBreakdown');
+  const today = new Date();
+
+  // Build last 7 days (most recent first)
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    days.push(d.toLocaleDateString('en-CA')); // YYYY-MM-DD
+  }
+
+  container.innerHTML = days.map(dateStr => {
+    const entries = logs.filter(e => e.date === dateStr);
+    const d = new Date(dateStr + 'T12:00:00');
+    const label = i === 0
+      ? 'Today'
+      : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const isToday = dateStr === today.toLocaleDateString('en-CA');
+    const displayLabel = isToday ? `Today — ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : dayLabel;
+
+    if (!entries.length) {
+      return `<div class="day-card">
+        <div class="day-card-header">
+          <span class="day-card-date">${displayLabel}</span>
+          <span class="day-card-empty">no data</span>
+        </div>
+      </div>`;
+    }
+
+    const t = entries.reduce((acc, e) => ({
+      calories: acc.calories + (Number(e.calories)||0),
+      protein:  acc.protein  + (Number(e.protein)||0),
+      carbs:    acc.carbs    + (Number(e.carbs)||0),
+      fat:      acc.fat      + (Number(e.fat)||0),
+    }), {calories:0, protein:0, carbs:0, fat:0});
+
+    return `<div class="day-card">
+      <div class="day-card-header">
+        <span class="day-card-date">${displayLabel}</span>
+        <span class="day-card-cal">🔥 ${t.calories.toLocaleString()} cal</span>
+      </div>
+      <div class="day-card-macros">
+        <div class="day-macro">
+          <div class="day-macro-icon">🔥</div>
+          <div class="day-macro-val">${t.calories.toLocaleString()}</div>
+          <div class="day-macro-lbl">cal</div>
+        </div>
+        <div class="day-macro">
+          <div class="day-macro-icon">💪</div>
+          <div class="day-macro-val">${t.protein}g</div>
+          <div class="day-macro-lbl">protein</div>
+        </div>
+        <div class="day-macro">
+          <div class="day-macro-icon">🍞</div>
+          <div class="day-macro-val">${t.carbs}g</div>
+          <div class="day-macro-lbl">carbs</div>
+        </div>
+        <div class="day-macro">
+          <div class="day-macro-icon">🥑</div>
+          <div class="day-macro-val">${t.fat}g</div>
+          <div class="day-macro-lbl">fat</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderHistory() {
+  renderDailyBreakdown();
   const logs = getLogs();
   if (logs.length === 0) {
     document.getElementById('statsTable').innerHTML = '<p style="padding:20px;color:var(--muted)">No data yet.</p>';
