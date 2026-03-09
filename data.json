@@ -70,5 +70,14 @@
     "protein": 2.5,
     "carbs": 48,
     "fat": 0.5
+  },
+  {
+    "date": "2026-03-09",
+    "time": "03:14 PM",
+    "description": "130g cottage cheese + 400g chicken breast + 170g cooked rice + medium apple",
+    "calories": 1045,
+    "protein": 110,
+    "carbs": 105,
+    "fat": 12
   }
 ]
