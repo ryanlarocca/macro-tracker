@@ -43,5 +43,14 @@
     "protein": 2,
     "carbs": 21,
     "fat": 11
+  },
+  {
+    "date": "2026-03-09",
+    "time": "09:51 AM",
+    "description": "Krispy Kreme glazed doughnut",
+    "calories": 190,
+    "protein": 2,
+    "carbs": 21,
+    "fat": 11
   }
 ]
