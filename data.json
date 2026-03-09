@@ -61,5 +61,14 @@
     "protein": 28,
     "carbs": 56,
     "fat": 2
+  },
+  {
+    "date": "2026-03-09",
+    "time": "11:09 AM",
+    "description": "1 medium banana + 5 oz blueberries",
+    "calories": 195,
+    "protein": 2.5,
+    "carbs": 48,
+    "fat": 0.5
   }
 ]
