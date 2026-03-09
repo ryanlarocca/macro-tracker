@@ -79,5 +79,14 @@
     "protein": 110,
     "carbs": 105,
     "fat": 12
+  },
+  {
+    "date": "2026-03-09",
+    "time": "04:26 PM",
+    "description": "Banana, medium",
+    "calories": 105,
+    "protein": 1.3,
+    "carbs": 27,
+    "fat": 0.3
   }
 ]
