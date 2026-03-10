@@ -319,6 +319,15 @@
       white-space: nowrap;
     }
     .ai-log-btn:disabled { opacity: 0.5; cursor: default; }
+    .ai-photo-btn {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      padding: 12px 13px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
     .ai-status {
       font-size: 0.8rem;
       color: var(--muted);
@@ -690,7 +699,22 @@
     <div class="ai-search-wrap">
       <div class="ai-search-row">
         <input type="text" id="aiSearchInput" placeholder="e.g. 2 eggs + toast, or 400g chicken breast" autocomplete="off" onkeydown="if(event.key==='Enter') aiLogMeal()">
+        <button class="ai-photo-btn" onclick="document.getElementById('photoInput').click()" title="Log from photo">📷</button>
         <button class="ai-log-btn" onclick="aiLogMeal()" id="aiLogBtn">Log</button>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoSelected(this)">
+      <!-- Photo preview + caption -->
+      <div id="photoPreviewWrap" style="display:none;margin-top:8px">
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <img id="photoPreview" style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:1.5px solid var(--border)">
+          <div style="flex:1">
+            <input type="text" id="photoCaption" placeholder="Optional: describe the food (e.g. 'double chicken chipotle bowl')" style="width:100%;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:0.85rem;box-sizing:border-box">
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="ai-log-btn" style="flex:1" onclick="aiLogFromPhoto()" id="photoLogBtn">Analyze & Log</button>
+              <button onclick="clearPhoto()" style="background:var(--card);border:1.5px solid var(--border);color:var(--muted);padding:8px 12px;border-radius:10px;cursor:pointer;font-size:0.85rem">✕</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="ai-status" id="aiStatus"></div>
     </div>
@@ -1134,6 +1158,98 @@ Food: "${text}"`;
   } finally {
     btn.disabled = false;
     btn.textContent = 'Log';
+  }
+}
+
+// ─── Photo Logging ────────────────────────────────────────────────────────────
+let currentPhotoBase64 = null;
+let currentPhotoMime = 'image/jpeg';
+
+function handlePhotoSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  currentPhotoMime = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    currentPhotoBase64 = dataUrl.split(',')[1];
+    document.getElementById('photoPreview').src = dataUrl;
+    document.getElementById('photoPreviewWrap').style.display = 'block';
+    document.getElementById('photoCaption').focus();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPhoto() {
+  currentPhotoBase64 = null;
+  document.getElementById('photoPreviewWrap').style.display = 'none';
+  document.getElementById('photoInput').value = '';
+  document.getElementById('photoCaption').value = '';
+  document.getElementById('aiStatus').textContent = '';
+}
+
+async function aiLogFromPhoto() {
+  if (!currentPhotoBase64) return;
+  const key = getGeminiKey();
+  if (!key) {
+    document.getElementById('aiStatus').textContent = '⚠️ Add your Gemini API key in ⚙️ Settings first.';
+    return;
+  }
+  const caption = document.getElementById('photoCaption').value.trim();
+  const btn = document.getElementById('photoLogBtn');
+  btn.disabled = true;
+  btn.textContent = '...';
+  document.getElementById('aiStatus').textContent = '🤖 Analyzing photo...';
+
+  const captionNote = caption
+    ? `The user says: "${caption}". Trust this description — the image is supplementary.`
+    : 'Use visual analysis to identify the food.';
+
+  const prompt = `Analyze this food image and return macros. ${captionNote}
+Rules: if it's a nutrition label read values exactly; if it's a food photo estimate using USDA averages; never ask follow-up questions.
+Return ONLY valid JSON, no markdown: {"description": "...", "calories": number, "protein": number, "carbs": number, "fat": number}`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: prompt },
+            { inlineData: { mimeType: currentPhotoMime, data: currentPhotoBase64 } }
+          ]
+        }]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'API error');
+
+    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    const match = raw.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || raw.match(/(\{[\s\S]*\})/);
+    const parsed = JSON.parse(match ? (match[1] || match[0]) : raw);
+
+    const entry = {
+      date: todayStr(),
+      time: nowTime12(),
+      description: parsed.description,
+      calories: parsed.calories,
+      protein: parsed.protein,
+      carbs: parsed.carbs,
+      fat: parsed.fat
+    };
+    const logs = getLogs();
+    logs.push(entry);
+    saveLogs(logs);
+    renderToday();
+    clearPhoto();
+    document.getElementById('aiStatus').textContent = `✓ Logged: ${parsed.description} — ${parsed.calories} cal`;
+    setTimeout(() => document.getElementById('aiStatus').textContent = '', 3000);
+  } catch(e) {
+    document.getElementById('aiStatus').textContent = `❌ ${e.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Analyze & Log';
   }
 }
 
