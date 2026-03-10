@@ -1149,6 +1149,7 @@ Food: "${text}"`;
     logs.push(entry);
     saveLogs(logs);
     renderToday();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     input.value = '';
     document.getElementById('aiStatus').textContent = `✓ Logged: ${parsed.description} — ${parsed.calories} cal`;
@@ -1243,6 +1244,7 @@ Return ONLY valid JSON, no markdown: {"description": "...", "calories": number, 
     saveLogs(logs);
     renderToday();
     clearPhoto();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     document.getElementById('aiStatus').textContent = `✓ Logged: ${parsed.description} — ${parsed.calories} cal`;
     setTimeout(() => document.getElementById('aiStatus').textContent = '', 3000);
   } catch(e) {
@@ -1282,6 +1284,7 @@ function addFavorite(idx) {
   logs.push(entry);
   saveLogs(logs);
   renderToday();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   // Show toast
   const toast = document.getElementById('favToast');
   toast.textContent = `✓ Logged!`;
