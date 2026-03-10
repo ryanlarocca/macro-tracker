@@ -713,6 +713,20 @@ function saveLogs(logs) {
   localStorage.setItem(LOGS_KEY, JSON.stringify(logs));
 }
 
+// Tombstone: track deleted entries so they don't come back on sync
+const DELETED_KEY = 'mt_deleted';
+function getDeleted() {
+  return new Set(JSON.parse(localStorage.getItem(DELETED_KEY) || '[]'));
+}
+function addDeleted(entry) {
+  const deleted = getDeleted();
+  deleted.add(`${entry.date}|${entry.time}|${entry.description}`);
+  localStorage.setItem(DELETED_KEY, JSON.stringify([...deleted]));
+}
+function isDeleted(entry) {
+  return getDeleted().has(`${entry.date}|${entry.time}|${entry.description}`);
+}
+
 function getTargets() {
   return JSON.parse(localStorage.getItem(TARGETS_KEY) || JSON.stringify(DEFAULT_TARGETS));
 }
@@ -932,6 +946,8 @@ function renderToday() {
 
 function deleteMeal(idx) {
   const logs = getLogs();
+  const entry = logs[idx];
+  if (entry) addDeleted(entry);
   logs.splice(idx, 1);
   saveLogs(logs);
   renderToday();
@@ -1239,10 +1255,12 @@ async function syncFromGithub() {
     // Merge: remote is canonical; also include any local-only entries (new bot or manual logs)
     const map = new Map();
     remote.forEach(e => {
+      if (isDeleted(e)) return; // respect user deletions
       const key = `${e.date}|${e.time}|${e.description}`;
       map.set(key, e);
     });
     local.forEach(e => {
+      if (isDeleted(e)) return; // respect user deletions
       const key = `${e.date}|${e.time}|${e.description}`;
       if (!map.has(key)) map.set(key, e); // keep local-only entries
     });
