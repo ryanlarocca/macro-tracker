@@ -1,37 +1,15 @@
-const CACHE_NAME = 'mt-cache-v4';
-const ASSETS = [
-  '/macro-tracker/',
-  '/macro-tracker/index.html',
-  '/macro-tracker/manifest.json',
-  '/macro-tracker/icon-192.png',
-  '/macro-tracker/icon-512.png'
-];
+// Network-only service worker — always serve fresh content
+const CACHE_NAME = 'mt-cache-v10';
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
-  );
-  self.skipWaiting();
-});
-
+self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
   );
   self.clients.claim();
 });
 
-// Network-first strategy
+// Always go to network, never cache
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        return response;
-      })
-      .catch(() => caches.match(event.request))
-  );
+  event.respondWith(fetch(event.request));
 });
