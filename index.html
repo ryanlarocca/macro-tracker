@@ -290,6 +290,50 @@
       color: white;
       border-color: var(--accent);
     }
+    /* AI Search */
+    .ai-search-wrap { margin-bottom: 8px; }
+    .ai-search-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .ai-search-row input {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    .ai-search-row input:focus { outline: none; border-color: var(--accent); }
+    .ai-log-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .ai-log-btn:disabled { opacity: 0.5; cursor: default; }
+    .ai-status {
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-height: 18px;
+      margin-top: 4px;
+      padding-left: 2px;
+    }
+    .manual-toggle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: 8px;
+      user-select: none;
+    }
+
     .fav-toast {
       position: fixed;
       bottom: 80px;
@@ -641,12 +685,21 @@
       <button class="fav-btn" onclick="addFavorite(5)">🍓 Strawberries (1 serving)</button>
     </div>
 
-    <!-- Log Meal Form -->
+    <!-- AI Log Meal -->
     <div class="section-title">Log a Meal</div>
-    <div class="log-form">
+    <div class="ai-search-wrap">
+      <div class="ai-search-row">
+        <input type="text" id="aiSearchInput" placeholder="e.g. 2 eggs + toast, or 400g chicken breast" autocomplete="off" onkeydown="if(event.key==='Enter') aiLogMeal()">
+        <button class="ai-log-btn" onclick="aiLogMeal()" id="aiLogBtn">Log</button>
+      </div>
+      <div class="ai-status" id="aiStatus"></div>
+    </div>
+    <!-- Manual fallback (collapsed by default) -->
+    <div class="manual-toggle" onclick="toggleManual()">Enter macros manually ▾</div>
+    <div class="log-form" id="manualForm" style="display:none">
       <div class="form-row">
         <div class="form-desc">
-          <input type="text" id="mealDesc" placeholder="Meal description (e.g. Chicken rice bowl)" autocomplete="off">
+          <input type="text" id="mealDesc" placeholder="Meal description" autocomplete="off">
         </div>
         <div class="macro-inputs">
           <div class="macro-input-wrap">
@@ -696,6 +749,12 @@
       </div>
       <button class="save-btn" onclick="saveGoals()">Save Goals</button>
       <span class="save-confirm" id="saveConfirm">✓ Saved!</span>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <label style="font-size:0.8rem;color:var(--muted);display:block;margin-bottom:6px">🤖 Gemini API Key (for AI food logging)</label>
+        <input type="password" id="geminiKeyInput" placeholder="AIza..." style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.85rem;box-sizing:border-box">
+        <button class="save-btn" style="margin-top:8px" onclick="saveGeminiKey()">Save Key</button>
+        <span class="save-confirm" id="keyConfirm">✓ Saved!</span>
+      </div>
     </div>
 
     <!-- Today's Meal Log -->
@@ -1001,6 +1060,86 @@ function renderToday() {
   document.getElementById('goalProtein').value = t.protein;
   document.getElementById('goalCarbs').value = t.carbs;
   document.getElementById('goalFat').value = t.fat;
+}
+
+// ─── Gemini API Key ───────────────────────────────────────────────────────────
+const GEMINI_KEY_LS = 'mt_gemini_key';
+function getGeminiKey() { return localStorage.getItem(GEMINI_KEY_LS) || ''; }
+function saveGeminiKey() {
+  const val = document.getElementById('geminiKeyInput').value.trim();
+  if (val) localStorage.setItem(GEMINI_KEY_LS, val);
+  const c = document.getElementById('keyConfirm');
+  c.classList.add('show'); setTimeout(() => c.classList.remove('show'), 2000);
+}
+// Pre-fill key input if saved
+window.addEventListener('DOMContentLoaded', () => {
+  const k = getGeminiKey();
+  if (k) document.getElementById('geminiKeyInput').value = k;
+});
+
+// ─── AI Log Meal ──────────────────────────────────────────────────────────────
+async function aiLogMeal() {
+  const input = document.getElementById('aiSearchInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const key = getGeminiKey();
+  if (!key) {
+    document.getElementById('aiStatus').textContent = '⚠️ Add your Gemini API key in ⚙️ Settings first.';
+    return;
+  }
+
+  const btn = document.getElementById('aiLogBtn');
+  btn.disabled = true;
+  btn.textContent = '...';
+  document.getElementById('aiStatus').textContent = '🤖 Parsing macros...';
+
+  try {
+    const prompt = `You are a macro logging assistant. Parse this food and return ONLY valid JSON, no markdown.
+Rules: use USDA averages, make best guesses, never ask follow-up questions.
+Keys: description (string), calories (number), protein (number, grams), carbs (number, grams), fat (number, grams)
+Food: "${text}"`;
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'API error');
+
+    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    const match = raw.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || raw.match(/(\{[\s\S]*\})/);
+    const parsed = JSON.parse(match ? (match[1] || match[0]) : raw);
+
+    const entry = {
+      date: todayStr(),
+      time: nowTime12(),
+      description: parsed.description,
+      calories: parsed.calories,
+      protein: parsed.protein,
+      carbs: parsed.carbs,
+      fat: parsed.fat
+    };
+    const logs = getLogs();
+    logs.push(entry);
+    saveLogs(logs);
+    renderToday();
+
+    input.value = '';
+    document.getElementById('aiStatus').textContent = `✓ Logged: ${parsed.description} — ${parsed.calories} cal`;
+    setTimeout(() => document.getElementById('aiStatus').textContent = '', 3000);
+  } catch (e) {
+    document.getElementById('aiStatus').textContent = `❌ ${e.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Log';
+  }
+}
+
+function toggleManual() {
+  const f = document.getElementById('manualForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
 }
 
 const FAVORITES = [
