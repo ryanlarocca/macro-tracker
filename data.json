@@ -97,5 +97,14 @@
     "protein": 1.3,
     "carbs": 27,
     "fat": 0.3
+  },
+  {
+    "date": "2026-03-10",
+    "time": "12:54 PM",
+    "description": "Knudsen Cottage Cheese",
+    "calories": 172,
+    "protein": 16,
+    "carbs": 11,
+    "fat": 8
   }
 ]
