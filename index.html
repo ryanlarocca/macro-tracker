@@ -1121,6 +1121,15 @@ async function aiLogMeal() {
   try {
     const prompt = `You are a macro logging assistant. Parse this food and return ONLY valid JSON, no markdown.
 Rules: use USDA averages, make best guesses, never ask follow-up questions.
+Key protein references (use these exactly when applicable):
+- Chicken breast cooked: 31g protein per 100g, 165 cal per 100g
+- Chicken breast raw: 23g protein per 100g, 120 cal per 100g
+- Ground beef 90/10: 26g protein per 100g
+- Egg white: 11g protein per 100g, 52 cal per 100g
+- Greek yogurt (non-fat): 10g protein per 100g
+- Salmon: 25g protein per 100g
+- White rice cooked: 2.7g protein per 100g, 130 cal per 100g
+- Red/white potato: 2g protein per 100g, 77 cal per 100g
 Keys: description (string), calories (number), protein (number, grams), carbs (number, grams), fat (number, grams)
 Food: "${text}"`;
 
@@ -1208,6 +1217,7 @@ async function aiLogFromPhoto() {
 
   const prompt = `Analyze this food image and return macros. ${captionNote}
 Rules: if it's a nutrition label read values exactly; if it's a food photo estimate using USDA averages; never ask follow-up questions.
+Key protein references: chicken breast cooked=31g/100g, chicken breast raw=23g/100g, egg white=11g/100g, salmon=25g/100g, ground beef 90/10=26g/100g.
 Return ONLY valid JSON, no markdown: {"description": "...", "calories": number, "protein": number, "carbs": number, "fat": number}`;
 
   try {
