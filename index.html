@@ -948,10 +948,10 @@ function renderToday() {
 
   const grid = document.getElementById('macro-grid');
   grid.innerHTML = macros.map(m => {
-    const consumed = totals[m.key];
+    const consumed = Math.round(totals[m.key]);
     const target = targets[m.key];
     const pct = target > 0 ? Math.round(consumed / target * 100) : 0;
-    const remaining = target - consumed;
+    const remaining = Math.round(target - consumed);
     const bar = segBar(pct);
     const color = macroColor(m.key);
 
@@ -1458,17 +1458,17 @@ function renderDailyBreakdown() {
         </div>
         <div class="day-macro">
           <div class="day-macro-icon">💪</div>
-          <div class="day-macro-val">${t.protein}g</div>
+          <div class="day-macro-val">${Math.round(t.protein)}g</div>
           <div class="day-macro-lbl">protein</div>
         </div>
         <div class="day-macro">
           <div class="day-macro-icon">🍞</div>
-          <div class="day-macro-val">${t.carbs}g</div>
+          <div class="day-macro-val">${Math.round(t.carbs)}g</div>
           <div class="day-macro-lbl">carbs</div>
         </div>
         <div class="day-macro">
           <div class="day-macro-icon">🥑</div>
-          <div class="day-macro-val">${t.fat}g</div>
+          <div class="day-macro-val">${Math.round(t.fat)}g</div>
           <div class="day-macro-lbl">fat</div>
         </div>
       </div>
