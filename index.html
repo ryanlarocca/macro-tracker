@@ -1086,6 +1086,18 @@ function renderToday() {
   document.getElementById('goalFat').value = t.fat;
 }
 
+// ─── Robust JSON extractor (handles Gemini thinking tokens + markdown) ────────
+function extractJSON(raw) {
+  // Try markdown code block first
+  const codeBlock = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlock) return JSON.parse(codeBlock[1]);
+  // Find the outermost { } pair
+  const start = raw.indexOf('{');
+  const end = raw.lastIndexOf('}');
+  if (start !== -1 && end !== -1) return JSON.parse(raw.slice(start, end + 1));
+  throw new Error('Unable to parse JSON string');
+}
+
 // ─── Gemini API Key ───────────────────────────────────────────────────────────
 const GEMINI_KEY_LS = 'mt_gemini_key';
 function getGeminiKey() { return localStorage.getItem(GEMINI_KEY_LS) || ''; }
@@ -1141,9 +1153,8 @@ Food: "${text}"`;
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'API error');
 
-    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    const match = raw.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || raw.match(/(\{[\s\S]*\})/);
-    const parsed = JSON.parse(match ? (match[1] || match[0]) : raw);
+    let raw = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+    const parsed = extractJSON(raw);
 
     const entry = {
       date: todayStr(),
@@ -1236,9 +1247,8 @@ Return ONLY valid JSON, no markdown: {"description": "...", "calories": number, 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || 'API error');
 
-    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    const match = raw.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || raw.match(/(\{[\s\S]*\})/);
-    const parsed = JSON.parse(match ? (match[1] || match[0]) : raw);
+    let raw = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+    const parsed = extractJSON(raw);
 
     const entry = {
       date: todayStr(),
